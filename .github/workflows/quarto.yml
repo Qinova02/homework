@@ -5,23 +5,33 @@ on:
     branches: main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Install Quarto
+      - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
           version: 1.4.554
 
-      - name: Render Quarto
+      - name: Render
         run: quarto render
 
-      - name: Deploy
+      - name: GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./\_site
+          publish_dir: ./_site
+          force_orphan: true
